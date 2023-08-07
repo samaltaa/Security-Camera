@@ -7,7 +7,9 @@ cap = cv2.VideoCapture(0)
 faceCascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
 
 recording = False 
+# define frame size 
 frame_size = (int(cap.get(3)), int(cap.get(4)))
+#define the codec
 fourcc = cv2.VideoWriter_fourcc(*"mp4v")
 out = cv2.VideoWriter("video.mp4", fourcc, 20, frame_size)
 
