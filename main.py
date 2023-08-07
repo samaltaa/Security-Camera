@@ -1,19 +1,20 @@
 import cv2
-import sys
 
-# cascPath = sys.argv[1]
-faceCascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
 
 # define a video capture object
-vid = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(0)
 
+faceCascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
 
-
+recording = False 
+frame_size = (int(cap.get(3)), int(cap.get(4)))
+fourcc = cv2.VideoWriter_fourcc(*"mp4v")
+out = cv2.VideoWriter("video.mp4", fourcc, 20, frame_size)
 
 while(True):
 
     #capture the video frame by frame 
-    ret, frame = vid.read()
+    ret, frame = cap.read()
 
 
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -25,6 +26,10 @@ while(True):
         minSize=(30, 30),
         flags = cv2.CASCADE_SCALE_IMAGE
     )
+    if len(faces) > 0:
+            recording = True
+
+    out.write(frame)
 
     # draw a rectangle around the faces detected 
     for (x, y, w, h) in faces:
@@ -38,8 +43,8 @@ while(True):
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 
-
+out.release()
 # after the loop release the cap object 
-vid.release()
+cap.release()
 # destroy all the windows
 cv2.destroyAllWindows()
