@@ -1,4 +1,6 @@
 import cv2
+import time
+import datetime
 
 
 # define a video capture object
@@ -6,12 +8,16 @@ cap = cv2.VideoCapture(0)
 
 faceCascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
 
-recording = False 
+detection = False 
+detection_stopped_time = None
+time_started = False
+SECONDS_TO_RECORD_AFTER_FACE_DETECTED = 5
+
 # define frame size 
 frame_size = (int(cap.get(3)), int(cap.get(4)))
 #define the codec
 fourcc = cv2.VideoWriter_fourcc(*"mp4v")
-out = cv2.VideoWriter("video.mp4", fourcc, 20, frame_size)
+
 
 while(True):
 
@@ -28,10 +34,28 @@ while(True):
         minSize=(30, 30),
         flags = cv2.CASCADE_SCALE_IMAGE
     )
+    # this entire block of code takes care of beginning recoding once
+    # face is detected, if face is undetected for 5+ seconds, recording stops
     if len(faces) > 0:
-            recording = True
-
-    out.write(frame)
+            if detection:
+                 time_started = False
+            else:
+                 detection = True
+                 current_time = datetime.datetime.now().strftime("%d-%m-%Y-%H-%M-%S")
+                 out = cv2.VideoWriter(f"{current_time}.mp4", fourcc, 20, frame_size)
+                 print("Started Recording")
+    elif detection:
+         if time_started:
+              if time.time() - detection_stopped_time > SECONDS_TO_RECORD_AFTER_FACE_DETECTED:
+                   detection = False
+                   time_started = False
+                   out.release()
+                   print("Recording Stopped")
+         else:
+            time_started = True
+            detection_stopped_time = time.time()
+    if detection:
+        out.write(frame)
 
     # draw a rectangle around the faces detected 
     for (x, y, w, h) in faces:
