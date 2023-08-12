@@ -6,7 +6,9 @@ import datetime
 # define a video capture object
 cap = cv2.VideoCapture(0)
 
+# load Haar cascade classifiers for boths face and eyes
 faceCascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
+eyeCascade = cv2.CascadeClassifier('haarcascade_eye.xml')
 
 detection = False 
 detection_stopped_time = None
@@ -56,6 +58,16 @@ while(True):
             detection_stopped_time = time.time()
     if detection:
         out.write(frame)
+
+    #detect eyes to track their movement
+    for (x,y,w,h) in faces:
+         roi_gray = gray[y:y+h, x:x+w]
+         roi_color = frame[y:y+h, x:x+w]
+         eyes = eyeCascade.detectMultiScale(roi_gray)
+         for (ex,ey,ew,eh) in eyes:
+              cv2.rectangle(roi_color,(ex,ey),(ex+ew,ey+eh),(0,255,0),2)
+
+    
 
     # draw a rectangle around the faces detected 
     for (x, y, w, h) in faces:
