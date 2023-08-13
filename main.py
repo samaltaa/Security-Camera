@@ -10,6 +10,9 @@ cap = cv2.VideoCapture(0)
 faceCascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
 eyeCascade = cv2.CascadeClassifier('haarcascade_eye.xml')
 
+#open text file for writing
+output_file = open("eye_movements.txt", "w")
+
 detection = False 
 detection_stopped_time = None
 time_started = False
@@ -77,6 +80,22 @@ while(True):
                    center = (int(x1 + w1/2), int(y1 + h1/2))
                    cv2.circle(eye_roi_color, center, 3, (255, 0, 0), -1)
 
+                   #determine & record eye movement direction and store in txt file
+                   if center[0] < ew / 3:
+                        direction = "left"
+                   elif center[0] > 2 * ew / 3:
+                        direction = "right"
+                   elif center[1] < eh / 3:
+                        direction = "up"
+                   elif center[1] > 2 * eh / 3:
+                        direction = "down"
+                   else:
+                        direction = "center"
+
+                    # record eye movement direction and store it in txt file
+                   output_file.write(f"the eyes of the person in the room moved {direction}\n")
+                    
+
     # draw a rectangle around the faces detected 
     for (x, y, w, h) in faces:
         cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), 2)
@@ -90,6 +109,8 @@ while(True):
         break
 
 out.release()
+#close output file
+output_file.close()
 # after the loop release the cap object 
 cap.release()
 # destroy all the windows
