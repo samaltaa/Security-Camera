@@ -31,5 +31,12 @@ def findEncodings(images_list
     
     return encode_list
 
-encodings = findEncodings(imgList)
-print(encodings)
+print("Encoding Started...")
+encodeListKnown = findEncodings(imgList)
+encodingListKnownWithIds = [encodeListKnown, monitoredIds]
+print("Encoding Complete")
+
+file = open("EncodeFile.p", "wb")
+pickle.dump(encodingListKnownWithIds, file)
+file.close()
+print("File Saved Successfully! Facial encodings ready to by processed")
