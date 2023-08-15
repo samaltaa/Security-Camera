@@ -15,7 +15,7 @@ monitoredIds = []
 # Load images of monitored individuals
 for path in PathList:
     imgList.append(cv2.imread(os.path.join(FolderPath, path)))
-    monitoredIds.append(os.path.splitext(path)[0])
+    monitoredIds.append(os.path.splitext(path))
 print(monitoredIds)
 
 # Function
@@ -26,7 +26,7 @@ def findEncodings(images_list
         # Switch BGR to RGB
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         # Get the facial encodings
-        encode = face_recognition.face_encodings(img)[0]
+        encode = face_recognition.face_encodings(img)
         encode_list.append(encode)
     
     return encode_list
@@ -40,3 +40,4 @@ file = open("EncodeFile.p", "wb")
 pickle.dump(encodingListKnownWithIds, file)
 file.close()
 print("File Saved Successfully! Facial encodings ready to by processed")
+print(encodingListKnownWithIds)

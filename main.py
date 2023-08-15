@@ -1,6 +1,7 @@
 import cv2
 import time
 import datetime
+import pickle
 
 
 # define a video capture object
@@ -22,6 +23,16 @@ SECONDS_TO_RECORD_AFTER_FACE_DETECTED = 5
 frame_size = (int(cap.get(3)), int(cap.get(4)))
 #define the codec
 fourcc = cv2.VideoWriter_fourcc(*"mp4v")
+
+#load encoding file
+print("Loading Encoded File...")
+
+file = open("EncodeFile.p", "rb")
+encondeListKnownWithIds = pickle.load(file)
+file.close()
+encondeListKnown, monitoredIds = encondeListKnownWithIds
+
+print("Encoded File Loaded, ready to monitor area... :)")
 
 
 while(True):
@@ -47,7 +58,7 @@ while(True):
             else:
                  detection = True
                  current_time = datetime.datetime.now().strftime("%d-%m-%Y-%H-%M-%S")
-                 out = cv2.VideoWriter(f"{current_time}.mp4", fourcc, 20, frame_size)
+                 out = cv2.VideoWriter(f"./Videos/{current_time}.mp4", fourcc, 20, frame_size)
                  print("Started Recording")
     elif detection:
          if time_started:
