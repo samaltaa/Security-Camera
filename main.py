@@ -127,6 +127,7 @@ while(True):
     for (x, y, w, h) in faces:
         cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), 2)
 
+     #capture face image upon detection
     if not face_detected and len(faces) > 0 and not saved_face_image:
          save_face_image(frame, 0)
          saved_face_image = True
