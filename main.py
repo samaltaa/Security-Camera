@@ -2,7 +2,9 @@ import cv2
 import time
 import datetime
 import pickle
+import os 
 
+#TODO: refactor code and turn redundant code into a single function
 
 # define a video capture object
 cap = cv2.VideoCapture(0)
@@ -33,6 +35,20 @@ file.close()
 encondeListKnown, monitoredIds = encondeListKnownWithIds
 
 print("Encoded File Loaded, ready to monitor area... :)")
+
+# Create the 'Images' directory if it doesn't exist
+if not os.path.exists('Images'):
+    os.makedirs('Images')
+
+def save_face_image(frame, face_index):
+    current_time = datetime.datetime.now().strftime("%d-%m-%Y-%H-%M-%S")
+    image_path = f"./Images/face_{current_time}_{face_index}.jpg"
+    cv2.imwrite(image_path, frame)
+    print(f"Intruder Face Captured at: {current_time}")
+
+face_detected = False  # Flag to track if a face has been detected
+saved_face_image = False  # Flag to track if the face image has been saved
+
 
 
 while(True):
@@ -110,6 +126,12 @@ while(True):
     # draw a rectangle around the faces detected 
     for (x, y, w, h) in faces:
         cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), 2)
+
+    if not face_detected and len(faces) > 0 and not saved_face_image:
+         save_face_image(frame, 0)
+         saved_face_image = True
+         face_detected = True
+
 
 
     #display the resulting frame
